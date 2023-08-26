@@ -14,17 +14,3 @@ export type IGenericResponse<T> = {
   }
   data: T
 }
-
-export type IAuthLogin = {
-  phoneNumber: string
-  password: string
-}
-
-export type IAuthLoginResponse = {
-  accessToken: string
-  refreshToken?: string
-}
-
-export type IRefreshTokenResponse = {
-  accessToken: string
-}

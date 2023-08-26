@@ -2,7 +2,12 @@ import { User } from '@prisma/client'
 import prisma from '../../../utilities/prisma'
 import bcrypt from 'bcrypt'
 import config from '../../../config'
-import { isExist } from '../../../helpers/isExist'
+import { ApiError } from '../../../errorFormating/apiError'
+import httpStatus from 'http-status'
+import { createToken } from '../../../helpers/jwtHelpers'
+import { Secret } from 'jsonwebtoken'
+import { IAuthSignin, IAuthSigninResponse } from './auth.interfaces'
+import { isExist } from './auth.utils'
 
 export const signUpService = async (data: User): Promise<User | null> => {
   // existency check
@@ -36,4 +41,40 @@ export const signUpService = async (data: User): Promise<User | null> => {
   }
 
   return result
+}
+
+export const signInService = async (
+  data: IAuthSignin
+): Promise<IAuthSigninResponse | null> => {
+  // existency check
+  const user = await isExist(data.email)
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  // Password check
+  const passwordMatch = await bcrypt.compare(data.password, user.password)
+  if (!passwordMatch) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is incorrect')
+  }
+
+  // Create Access Token
+  const { id, role, phone, name, email } = user
+  const accessToken = createToken(
+    { id, role, phone, name, email },
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  )
+
+  // Create Refresh Token
+  const refreshToken = createToken(
+    { id, role, phone, name, email },
+    config.jwt.refresh_secret as Secret,
+    config.jwt.refresh_expires_in as string
+  )
+
+  return {
+    accessToken,
+    refreshToken,
+  }
 }
