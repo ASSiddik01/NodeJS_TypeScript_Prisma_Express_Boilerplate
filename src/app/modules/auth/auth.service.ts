@@ -4,9 +4,13 @@ import bcrypt from 'bcrypt'
 import config from '../../../config'
 import { ApiError } from '../../../errorFormating/apiError'
 import httpStatus from 'http-status'
-import { createToken } from '../../../helpers/jwtHelpers'
+import { createToken, verifyToken } from '../../../helpers/jwtHelpers'
 import { Secret } from 'jsonwebtoken'
-import { IAuthSignin, IAuthSigninResponse } from './auth.interfaces'
+import {
+  IAuthSignin,
+  IAuthSigninResponse,
+  IRefreshTokenResponse,
+} from './auth.interfaces'
 import { isExist } from './auth.utils'
 
 export const signUpService = async (data: User): Promise<User | null> => {
@@ -76,5 +80,40 @@ export const signInService = async (
   return {
     accessToken,
     refreshToken,
+  }
+}
+
+export const refreshTokenService = async (
+  token: string
+): Promise<IRefreshTokenResponse> => {
+  let verifiedToken = null
+  try {
+    verifiedToken = verifyToken(token, config.jwt.refresh_secret as Secret)
+  } catch (err) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid refresh token')
+  }
+
+  const { email } = verifiedToken
+  // Existency Check
+  const user = await isExist(email)
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist')
+  }
+
+  //Generate New Access Token
+  const newAccessToken = createToken(
+    {
+      id: user.id,
+      role: user.role,
+      phone: user.phone,
+      name: user.name,
+      email: user.email,
+    },
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  )
+
+  return {
+    accessToken: newAccessToken,
   }
 }

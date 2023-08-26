@@ -1,11 +1,15 @@
 import { Request, Response } from 'express'
 import { tryCatch } from '../../../utilities/tryCatch'
-import { signInService, signUpService } from './auth.service'
+import {
+  refreshTokenService,
+  signInService,
+  signUpService,
+} from './auth.service'
 import { sendRes } from '../../../utilities/sendRes'
 import httpStatus from 'http-status'
 import { User } from '@prisma/client'
 import config from '../../../config'
-import { IAuthSigninResponse } from './auth.interfaces'
+import { IAuthSigninResponse, IRefreshTokenResponse } from './auth.interfaces'
 
 export const signUp = tryCatch(async (req: Request, res: Response) => {
   const result = await signUpService(req.body)
@@ -43,4 +47,23 @@ export const signIn = tryCatch(async (req: Request, res: Response) => {
       data: result,
     })
   }
+})
+
+export const refreshToken = tryCatch(async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies
+  const result = await refreshTokenService(refreshToken)
+
+  // Set Refresh Token in Cookies
+  const cookieOptions = {
+    secure: config.env === 'production',
+    httpOnly: true,
+  }
+  res.cookie('refreshToken', refreshToken, cookieOptions)
+
+  sendRes<IRefreshTokenResponse>(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Sign in successfully',
+    data: result,
+  })
 })

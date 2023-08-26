@@ -27,3 +27,11 @@ export const signInZod = z.object({
     }),
   }),
 })
+
+export const refreshTokenZod = z.object({
+  cookies: z.object({
+    refreshToken: z.string({
+      required_error: 'Zod: Refresh Token is required',
+    }),
+  }),
+})
