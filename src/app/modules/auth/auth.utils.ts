@@ -1,12 +1,16 @@
 import prisma from '../../../utilities/prisma'
 import bcrypt from 'bcrypt'
+import { User } from '@prisma/client'
 
-export const isExist = (payload: string) =>
-  prisma.user.findFirst({
+export const isExist = async (payload: string): Promise<User | null> => {
+  const result = await prisma.user.findFirst({
     where: {
       OR: [{ email: payload }, { phone: payload }],
     },
   })
+
+  return result
+}
 
 export const isPasswordMatched = async (
   givenPassword: string,

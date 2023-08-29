@@ -46,3 +46,11 @@ export const changePasswordZod = z.object({
     }),
   }),
 })
+
+export const forgetPasswordZod = z.object({
+  body: z.object({
+    email: z.string({
+      required_error: 'Zod: Email is required',
+    }),
+  }),
+})

@@ -1,3 +1,5 @@
+import { User } from '@prisma/client'
+
 export type IAuthSignin = {
   email: string
   password: string
@@ -15,4 +17,9 @@ export type IRefreshTokenResponse = {
 export type IChangePassword = {
   oldPassword: string
   newPassword: string
+}
+
+export type IExtendedUser = User & {
+  passwordResetToken?: string
+  passwordResetExpires?: number | undefined
 }
