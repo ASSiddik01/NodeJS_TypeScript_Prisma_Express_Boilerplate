@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { tryCatch } from '../../../utilities/tryCatch'
 import {
+  changePasswordService,
   refreshTokenService,
   signInService,
   signUpService,
@@ -65,5 +66,14 @@ export const refreshToken = tryCatch(async (req: Request, res: Response) => {
     success: true,
     message: 'Sign in successfully',
     data: result,
+  })
+})
+
+export const changePassword = tryCatch(async (req, res) => {
+  await changePasswordService(req.body, req.user as Partial<User>)
+  sendRes(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Password changed successfully !',
   })
 })

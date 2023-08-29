@@ -8,9 +8,10 @@ import { Secret } from 'jsonwebtoken'
 import {
   IAuthSignin,
   IAuthSigninResponse,
+  IChangePassword,
   IRefreshTokenResponse,
 } from './auth.interfaces'
-import { isExist } from './auth.utils'
+import { isExist, isPasswordMatched } from './auth.utils'
 import { ApiError } from './../../../errorFormating/apiError'
 
 export const signUpService = async (data: User): Promise<User | null> => {
@@ -117,4 +118,39 @@ export const refreshTokenService = async (
   return {
     accessToken: newAccessToken,
   }
+}
+
+export const changePasswordService = async (
+  payload: IChangePassword,
+  user: Partial<User>
+) => {
+  const { oldPassword, newPassword } = payload
+  const { email } = user
+  const isUserExist = await isExist(email as string)
+
+  if (!isUserExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+  }
+
+  if (
+    isUserExist.password &&
+    !(await isPasswordMatched(oldPassword, isUserExist.password))
+  ) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Old password is incorrect')
+  }
+
+  // hass
+  const newHashedPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_solt_round)
+  )
+
+  const updatedData = {
+    password: newHashedPassword,
+  }
+
+  await prisma.user.update({
+    where: { email },
+    data: updatedData,
+  })
 }
