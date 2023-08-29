@@ -4,6 +4,7 @@ import {
   changePasswordService,
   forgetPasswordService,
   refreshTokenService,
+  resetPasswordService,
   signInService,
   signUpService,
 } from './auth.service'
@@ -86,5 +87,17 @@ export const forgetPassword = tryCatch(async (req, res) => {
     statusCode: 200,
     success: true,
     message: 'Send reset token in you email successfully !',
+  })
+})
+
+export const resetPassword = tryCatch(async (req, res) => {
+  const { password } = req.body
+  const { token } = req.params
+  const result = await resetPasswordService(token, password)
+  sendRes(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Password reset successfully',
+    data: result,
   })
 })

@@ -4,6 +4,7 @@ import {
   changePassword,
   forgetPassword,
   refreshToken,
+  resetPassword,
   signIn,
   signUp,
 } from './auth.controller'
@@ -11,6 +12,7 @@ import {
   changePasswordZod,
   forgetPasswordZod,
   refreshTokenZod,
+  resetPasswordZod,
   signInZod,
   signUpZod,
 } from './auth.validation'
@@ -35,4 +37,9 @@ router
 router
   .route('/forget-password')
   .patch(reqValidate(forgetPasswordZod), forgetPassword)
+
+router
+  .route('/reset-password/:token')
+  .patch(reqValidate(resetPasswordZod), resetPassword)
+
 export default router

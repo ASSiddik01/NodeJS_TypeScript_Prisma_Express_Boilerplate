@@ -172,9 +172,7 @@ export const forgetPasswordService = async (email: string) => {
 
   isUserExist.passwordResetExpires = Date.now() + 30 * 60 * 1000
 
-  console.log(isUserExist)
-  // const savedUser = await User.findByIdAndUpdate(user._id, user)
-  const savedUser = await prisma.user.update({
+  await prisma.user.update({
     where: { email },
     data: isUserExist,
   })
@@ -813,4 +811,36 @@ export const forgetPasswordService = async (email: string) => {
     `,
   }
   sendEmail(data)
+}
+
+export const resetPasswordService = async (token: string, password: string) => {
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+  const user = await prisma.user.findFirst({
+    where: {
+      passwordResetToken: hashedToken,
+    },
+  })
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Token not match')
+  }
+
+  const expire = (user?.passwordResetExpires as number) < Date.now()
+
+  if (expire) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Token expire')
+  }
+
+  user.password = await bcrypt.hash(password, Number(config.bcrypt_solt_round))
+  user.passwordResetToken = null
+  user.passwordResetExpires = null
+  const savedUser = await prisma.user.update({
+    where: {
+      email: user.email,
+    },
+    data: user,
+  })
+
+  return savedUser
 }
