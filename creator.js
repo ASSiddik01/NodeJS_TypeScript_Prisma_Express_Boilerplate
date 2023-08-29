@@ -11,53 +11,120 @@ if (process.argv.length < 2) {
 
 // Get folder and file names from command-line arguments
 const name = process.argv[2]
-// const folderName = process.argv[3]
+
 // Define the target directory
 const targetDirectory = path.join(__dirname, 'src', 'app', 'modules', name)
+
 // Create the target directory
 fs.mkdirSync(targetDirectory, { recursive: true })
+
 // Create and write the files in the target directory
-const controllerTemplate = `
-// Your controller code here
-`
-fs.writeFileSync(
-  path.join(targetDirectory, `${name}.controller.ts`),
-  controllerTemplate
-)
-const serviceTemplate = `
-// Your service code here
-`
-fs.writeFileSync(
-  path.join(targetDirectory, `${name}.service.ts`),
-  serviceTemplate
-)
+
 const routesTemplate = `
-// Define your routes here
+import express from 'express'
+import reqValidate from '../../../middleware/reqValidate'
+import { USER_ROLE } from '@prisma/client'
+import { auth } from '../../../middleware/auth'
+import { changePasswordZod } from './auth.validation'
+
+// example route
+
+router
+  .route('/change-password')
+  .patch(
+    auth(USER_ROLE.admin, USER_ROLE.user),
+    reqValidate(changePasswordZod),
+    changePassword
+  )
+
+export default router
 `
 fs.writeFileSync(
   path.join(targetDirectory, `${name}.routes.ts`),
   routesTemplate
 )
+
+const validationTemplate = `
+import { z } from 'zod'
+
+// example zod validation schema
+export const changePasswordZod = z.object({
+  body: z.object({
+    oldPassword: z.string({
+      required_error: 'Z: Old password is required',
+    }),
+    newPassword: z.string({
+      required_error: 'Z: New password is required',
+    }),
+  }),
+})
+
+`
+fs.writeFileSync(
+  path.join(targetDirectory, `${name}.validations.ts`),
+  validationTemplate
+)
+
+const controllerTemplate = `
+import { Request, Response } from 'express'
+import { tryCatch } from '../../../utilities/tryCatch'
+import { sendRes } from '../../../utilities/sendRes'
+import httpStatus from 'http-status'
+import { User } from '@prisma/client'
+import {signUpService} from './auth.service'
+
+// example controller
+export const signUp = tryCatch(async (req: Request, res: Response) => {
+  const result = await signUpService(req.body)
+  sendRes<User>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Sign up successfully',
+    data: result,
+  })
+})
+
+`
+fs.writeFileSync(
+  path.join(targetDirectory, `${name}.controllers.ts`),
+  controllerTemplate
+)
+
+const serviceTemplate = `
+import { User } from '@prisma/client'
+import prisma from '../../../utilities/prisma'
+import bcrypt from 'bcrypt'
+import config from '../../../config'
+import httpStatus from 'http-status'
+import { ApiError } from './../../../errorFormating/apiError'
+
+export const signUpService = async (data: User): Promise<User | null> => {
+  return result
+}
+`
+fs.writeFileSync(
+  path.join(targetDirectory, `${name}.services.ts`),
+  serviceTemplate
+)
+
 const interfacesTemplate = `
-// Define your interfaces here
+// Example interfaces
+export type IChangePassword = {
+  oldPassword: string
+  newPassword: string
+}
 `
 fs.writeFileSync(
   path.join(targetDirectory, `${name}.interfaces.ts`),
   interfacesTemplate
 )
+
 const constantsTemplate = `
-export const ${name} = ['']
+export const role = ['']
 `
 fs.writeFileSync(
   path.join(targetDirectory, `${name}.constants.ts`),
   constantsTemplate
-)
-const validationTemplate = `
-// Define your validations here
-`
-fs.writeFileSync(
-  path.join(targetDirectory, `${name}.validation.ts`),
-  validationTemplate
 )
 
 console.log(

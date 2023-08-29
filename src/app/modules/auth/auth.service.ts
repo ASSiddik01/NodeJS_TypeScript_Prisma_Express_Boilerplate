@@ -3,6 +3,8 @@ import prisma from '../../../utilities/prisma'
 import bcrypt from 'bcrypt'
 import config from '../../../config'
 import httpStatus from 'http-status'
+import { ApiError } from './../../../errorFormating/apiError'
+import crypto from 'crypto'
 import { createToken, verifyToken } from '../../../helpers/jwtHelpers'
 import { Secret } from 'jsonwebtoken'
 import {
@@ -12,8 +14,6 @@ import {
   IRefreshTokenResponse,
 } from './auth.interfaces'
 import { isExist, isPasswordMatched } from './auth.utils'
-import { ApiError } from './../../../errorFormating/apiError'
-import crypto from 'crypto'
 import sendEmail from '../../../utilities/emailSender'
 
 export const signUpService = async (data: User): Promise<User | null> => {

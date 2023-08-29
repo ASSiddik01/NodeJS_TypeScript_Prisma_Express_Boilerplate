@@ -1,5 +1,7 @@
 import express from 'express'
 import reqValidate from '../../../middleware/reqValidate'
+import { USER_ROLE } from '@prisma/client'
+import { auth } from '../../../middleware/auth'
 import {
   changePassword,
   forgetPassword,
@@ -16,8 +18,7 @@ import {
   signInZod,
   signUpZod,
 } from './auth.validation'
-import { USER_ROLE } from '@prisma/client'
-import { auth } from '../../../middleware/auth'
+
 const router = express.Router()
 
 router.route('/signup').post(reqValidate(signUpZod), signUp)

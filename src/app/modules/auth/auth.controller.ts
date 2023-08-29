@@ -1,5 +1,10 @@
 import { Request, Response } from 'express'
 import { tryCatch } from '../../../utilities/tryCatch'
+import { sendRes } from '../../../utilities/sendRes'
+import httpStatus from 'http-status'
+import { User } from '@prisma/client'
+import config from '../../../config'
+import { IAuthSigninResponse, IRefreshTokenResponse } from './auth.interfaces'
 import {
   changePasswordService,
   forgetPasswordService,
@@ -8,11 +13,6 @@ import {
   signInService,
   signUpService,
 } from './auth.service'
-import { sendRes } from '../../../utilities/sendRes'
-import httpStatus from 'http-status'
-import { User } from '@prisma/client'
-import config from '../../../config'
-import { IAuthSigninResponse, IRefreshTokenResponse } from './auth.interfaces'
 
 export const signUp = tryCatch(async (req: Request, res: Response) => {
   const result = await signUpService(req.body)
