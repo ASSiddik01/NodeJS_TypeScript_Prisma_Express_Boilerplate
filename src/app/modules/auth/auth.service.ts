@@ -2,7 +2,6 @@ import { User } from '@prisma/client'
 import prisma from '../../../utilities/prisma'
 import bcrypt from 'bcrypt'
 import config from '../../../config'
-import { ApiError } from '../../../errorFormating/apiError'
 import httpStatus from 'http-status'
 import { createToken, verifyToken } from '../../../helpers/jwtHelpers'
 import { Secret } from 'jsonwebtoken'
@@ -12,6 +11,7 @@ import {
   IRefreshTokenResponse,
 } from './auth.interfaces'
 import { isExist } from './auth.utils'
+import { ApiError } from './../../../errorFormating/apiError'
 
 export const signUpService = async (data: User): Promise<User | null> => {
   // existency check
@@ -21,19 +21,20 @@ export const signUpService = async (data: User): Promise<User | null> => {
   ])
 
   if (email || phone) {
-    throw new Error(
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
       `${email ? 'Email' : ''}${email && phone ? ' & ' : ''}${
         phone ? 'Phone number' : ''
       } already ${email || phone ? 'exists' : ''}`
     )
   }
+
   // save new user
   const { password } = data
   const hashedPassword = await bcrypt.hash(
     password,
     Number(config.bcrypt_solt_round)
   )
-  data.role = 'user'
   data.password = hashedPassword
 
   const result = await prisma.user.create({

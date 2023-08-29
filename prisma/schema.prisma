@@ -11,14 +11,20 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
+  id       String     @id @default(uuid())
   name     String
-  email    String  @unique
-  phone    String  @unique
-  role     String?
+  email    String     @unique
+  phone    String     @unique
+  role     USER_ROLE? @default(user)
   password String
 
   @@map("users")
+}
+
+enum USER_ROLE {
+  user
+  admin
+  super_admin
 }
 
 // model Profile {
