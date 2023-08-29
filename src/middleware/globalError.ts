@@ -11,6 +11,7 @@ import { errorLogger } from '../utilities/logger'
 import { ZodError } from 'zod'
 import { handleZodError } from '../errorFormating/handleZodError'
 import { handleCastError } from '../errorFormating/handleCastError'
+import { Prisma } from '@prisma/client'
 
 export const globalError: ErrorRequestHandler = (
   error,
@@ -28,7 +29,7 @@ export const globalError: ErrorRequestHandler = (
     : errorLogger.error(`Global Error Handler ==`, error)
 
   // Check
-  if (error?.name === 'ValidationError') {
+  if (error instanceof Prisma.PrismaClientValidationError) {
     const simplifiedError = handleValidationError(error)
     statusCode = simplifiedError.statusCode
     message = simplifiedError.message
@@ -38,7 +39,7 @@ export const globalError: ErrorRequestHandler = (
     statusCode = simplifiedError.statusCode
     message = simplifiedError.message
     errorMessage = simplifiedError.errorMessage
-  } else if (error?.name === 'CastError') {
+  } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
     const simplifiedError = handleCastError(error)
     statusCode = simplifiedError.statusCode
     message = simplifiedError.message

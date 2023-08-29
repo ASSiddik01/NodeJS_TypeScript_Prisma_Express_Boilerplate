@@ -10,7 +10,7 @@ export const handleZodError = (err: ZodError): IErrorResponse => {
   })
   return {
     statusCode: 500,
-    message: 'Zod Error',
+    message: 'Zod Validation Error',
     errorMessage: errors,
   }
 }

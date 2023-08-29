@@ -1,19 +1,19 @@
-import mongoose from 'mongoose'
-import { IErrorMessage } from '../interface/error'
 import { IErrorResponse } from '../interface/common'
+import { Prisma } from '@prisma/client'
 
 export const handleValidationError = (
-  err: mongoose.Error.ValidationError
+  error: Prisma.PrismaClientValidationError
 ): IErrorResponse => {
-  const errors: IErrorMessage[] = Object.values(err.errors).map(el => {
-    return {
-      path: el?.path,
-      message: el?.message,
-    }
-  })
+  const errors = [
+    {
+      path: '',
+      message: error.message,
+    },
+  ]
+  const statusCode = 400
 
   return {
-    statusCode: 500,
+    statusCode,
     message: 'Validation Error',
     errorMessage: errors,
   }
