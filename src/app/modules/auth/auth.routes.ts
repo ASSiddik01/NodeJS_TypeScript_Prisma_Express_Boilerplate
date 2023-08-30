@@ -1,6 +1,5 @@
 import express from 'express'
 import reqValidate from '../../../middleware/reqValidate'
-import { USER_ROLE } from '@prisma/client'
 import { auth } from '../../../middleware/auth'
 import {
   changePassword,
@@ -18,6 +17,7 @@ import {
   signInZod,
   signUpZod,
 } from './auth.validation'
+import { ENUM_USER_ROLE } from '../../../enums/user'
 
 const router = express.Router()
 
@@ -30,7 +30,7 @@ router.route('/refresh-token').post(reqValidate(refreshTokenZod), refreshToken)
 router
   .route('/change-password')
   .patch(
-    auth(USER_ROLE.admin, USER_ROLE.user),
+    auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.USER),
     reqValidate(changePasswordZod),
     changePassword
   )

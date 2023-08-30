@@ -12,6 +12,11 @@ if (process.argv.length < 2) {
 // Get folder and file names from command-line arguments
 const name = process.argv[2]
 
+const capitalizeLetter = name => {
+  let string = name
+  return string[0].toUpperCase() + string.slice(1)
+}
+
 // Define the target directory
 const targetDirectory = path.join(__dirname, 'src', 'app', 'modules', name)
 
@@ -19,22 +24,25 @@ const targetDirectory = path.join(__dirname, 'src', 'app', 'modules', name)
 fs.mkdirSync(targetDirectory, { recursive: true })
 
 // Create and write the files in the target directory
-
 const routesTemplate = `
 import express from 'express'
 import reqValidate from '../../../middleware/reqValidate'
 import { USER_ROLE } from '@prisma/client'
 import { auth } from '../../../middleware/auth'
-import { changePasswordZod } from './auth.validation'
+import { create${capitalizeLetter(name)}Zod } from './${name}.validations'
+import { create${capitalizeLetter(name)} } from './${capitalizeLetter(
+  name
+)}.controllers'
+
+const router = express.Router()
 
 // example route
-
 router
-  .route('/change-password')
-  .patch(
-    auth(USER_ROLE.admin, USER_ROLE.user),
-    reqValidate(changePasswordZod),
-    changePassword
+  .route('/create')
+  .post(
+    auth(USER_ROLE.admin),
+    reqValidate(create${capitalizeLetter(name)}Zod),
+    create${capitalizeLetter(name)}
   )
 
 export default router
@@ -48,17 +56,13 @@ const validationTemplate = `
 import { z } from 'zod'
 
 // example zod validation schema
-export const changePasswordZod = z.object({
+export const create${capitalizeLetter(name)}Zod = z.object({
   body: z.object({
-    oldPassword: z.string({
-      required_error: 'Z: Old password is required',
-    }),
-    newPassword: z.string({
-      required_error: 'Z: New password is required',
+    key: z.string({
+      required_error: 'Z: Key name is required',
     }),
   }),
 })
-
 `
 fs.writeFileSync(
   path.join(targetDirectory, `${name}.validations.ts`),
@@ -71,15 +75,17 @@ import { tryCatch } from '../../../utilities/tryCatch'
 import { sendRes } from '../../../utilities/sendRes'
 import httpStatus from 'http-status'
 import { User } from '@prisma/client'
-import {signUpService} from './auth.service'
+import {create${capitalizeLetter(name)}Service} from './${name}.services'
 
 // example controller
-export const signUp = tryCatch(async (req: Request, res: Response) => {
-  const result = await signUpService(req.body)
+export const create${capitalizeLetter(
+  name
+)} = tryCatch(async (req: Request, res: Response) => {
+  const result = await create${capitalizeLetter(name)}Service(req.body)
   sendRes<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Sign up successfully',
+    message: 'Create ${capitalizeLetter(name)} successfully',
     data: result,
   })
 })
@@ -98,7 +104,7 @@ import config from '../../../config'
 import httpStatus from 'http-status'
 import { ApiError } from './../../../errorFormating/apiError'
 
-export const signUpService = async (data: User): Promise<User | null> => {
+export const create${name.lo}Service = async (data: User): Promise<User | null> => {
   return result
 }
 `
@@ -109,7 +115,7 @@ fs.writeFileSync(
 
 const interfacesTemplate = `
 // Example interfaces
-export type IChangePassword = {
+export type I${name} = {
   oldPassword: string
   newPassword: string
 }
@@ -120,7 +126,7 @@ fs.writeFileSync(
 )
 
 const constantsTemplate = `
-export const role = ['']
+export const ${name} = ['']
 `
 fs.writeFileSync(
   path.join(targetDirectory, `${name}.constants.ts`),

@@ -20,6 +20,5 @@ export type IChangePassword = {
 }
 
 export type IExtendedUser = User & {
-  passwordResetToken?: string
-  passwordResetExpires?: number | undefined
+  role: string
 }

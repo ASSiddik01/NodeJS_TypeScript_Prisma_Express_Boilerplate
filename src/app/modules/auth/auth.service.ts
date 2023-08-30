@@ -11,12 +11,15 @@ import {
   IAuthSignin,
   IAuthSigninResponse,
   IChangePassword,
+  IExtendedUser,
   IRefreshTokenResponse,
 } from './auth.interfaces'
 import { isExist, isPasswordMatched } from './auth.utils'
 import sendEmail from '../../../utilities/emailSender'
 
-export const signUpService = async (data: User): Promise<User | null> => {
+export const signUpService = async (
+  data: IExtendedUser
+): Promise<User | null> => {
   // existency check
   const [email, phone] = await Promise.all([
     isExist(data.email),
@@ -38,6 +41,8 @@ export const signUpService = async (data: User): Promise<User | null> => {
     password,
     Number(config.bcrypt_solt_round)
   )
+
+  data.role = 'user'
   data.password = hashedPassword
 
   const result = await prisma.user.create({
