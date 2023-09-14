@@ -4,7 +4,9 @@ import { ApiError } from './../../../errorFormating/apiError'
 import { Profile } from '@prisma/client'
 import { IExtendProfile } from './profile.interfaces'
 import { JwtPayload } from 'jsonwebtoken'
+import { userPolulate } from './profile.constants'
 
+// create profile service
 export const createProfileService = async (
   user: JwtPayload | null,
   data: Profile
@@ -26,6 +28,24 @@ export const createProfileService = async (
 
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, `Create profile failed`)
+  }
+
+  return result
+}
+
+// get profile service
+export const getProfileService = async (
+  reqUser: JwtPayload | null
+): Promise<Partial<Omit<IExtendProfile, 'about'>> | null> => {
+  const result = await prisma.profile.findUnique({
+    where: {
+      userId: reqUser?.id,
+    },
+    include: userPolulate,
+  })
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Profile retrive failed`)
   }
 
   return result

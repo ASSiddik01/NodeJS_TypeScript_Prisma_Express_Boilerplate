@@ -75,7 +75,7 @@ import httpStatus from 'http-status'
 import { User } from '@prisma/client'
 import {create${capitalizeLetter(name)}Service} from './${name}.services'
 
-// example controller
+// create ${name} controller
 export const create${capitalizeLetter(
   name
 )} = tryCatch(async (req: Request, res: Response) => {
@@ -102,6 +102,7 @@ import config from '../../../config'
 import httpStatus from 'http-status'
 import { ApiError } from './../../../errorFormating/apiError'
 
+// create ${name} service
 export const create${capitalizeLetter(
   name
 )}Service = async (data: User): Promise<User | null> => {
