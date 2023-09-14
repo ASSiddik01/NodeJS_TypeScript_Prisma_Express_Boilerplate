@@ -27,3 +27,27 @@ export const createProfileZod = z.object({
     youtube: z.string().optional(),
   }),
 })
+
+// Update profile zod validation schema
+export const updateProfileZod = z.object({
+  body: z.object({
+    about: z.string().optional(),
+    designation: z.string().optional(),
+    resumeUrl: z.string().optional(),
+    address: z.string().optional(),
+    bloodGroup: z.string().optional(),
+    contactEmail: z.string().optional(),
+    occupation: z.string().optional(),
+    photoUrl: z.string().optional(),
+    facebook: z.string().optional(),
+    github: z.string().optional(),
+    linkedin: z.string().optional(),
+    instagram: z.string().optional(),
+    behance: z.string().optional(),
+    skype: z.string().optional(),
+    twitter: z.string().optional(),
+    telegram: z.string().optional(),
+    whatsapp: z.string().optional(),
+    youtube: z.string().optional(),
+  }),
+})

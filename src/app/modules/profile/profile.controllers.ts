@@ -2,7 +2,11 @@ import { Request, Response } from 'express'
 import { tryCatch } from '../../../utilities/tryCatch'
 import { sendRes } from '../../../utilities/sendRes'
 import httpStatus from 'http-status'
-import { createProfileService, getProfileService } from './profile.services'
+import {
+  createProfileService,
+  getProfileService,
+  updateProfileService,
+} from './profile.services'
 import { IExtendProfile } from './profile.interfaces'
 
 // create profile controller
@@ -25,6 +29,18 @@ export const getProfile = tryCatch(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Profile retrive successfully',
+    data: result,
+  })
+})
+
+// get profile controller
+export const updateProfile = tryCatch(async (req: Request, res: Response) => {
+  const { user, body } = req
+  const result = await updateProfileService(user, body)
+  sendRes<Partial<IExtendProfile>>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Profile update successfully',
     data: result,
   })
 })

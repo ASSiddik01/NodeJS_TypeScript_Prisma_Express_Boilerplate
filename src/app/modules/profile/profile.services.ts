@@ -36,7 +36,7 @@ export const createProfileService = async (
 // get profile service
 export const getProfileService = async (
   reqUser: JwtPayload | null
-): Promise<Partial<Omit<IExtendProfile, 'about'>> | null> => {
+): Promise<Partial<IExtendProfile> | null> => {
   const result = await prisma.profile.findUnique({
     where: {
       userId: reqUser?.id,
@@ -46,6 +46,26 @@ export const getProfileService = async (
 
   if (!result) {
     throw new ApiError(httpStatus.NOT_FOUND, `Profile retrive failed`)
+  }
+
+  return result
+}
+
+// update profile service
+export const updateProfileService = async (
+  reqUser: JwtPayload | null,
+  data: IExtendProfile
+): Promise<Partial<IExtendProfile> | null> => {
+  const result = await prisma.profile.update({
+    where: {
+      userId: reqUser?.id,
+    },
+    data,
+    include: userPolulate,
+  })
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, `Profile update failed`)
   }
 
   return result
