@@ -11,15 +11,12 @@ import {
   IAuthSignin,
   IAuthSigninResponse,
   IChangePassword,
-  IExtendedUser,
   IRefreshTokenResponse,
 } from './auth.interfaces'
 import { isExist, isPasswordMatched } from './auth.utils'
 import sendEmail from '../../../utilities/emailSender'
 
-export const signUpService = async (
-  data: IExtendedUser
-): Promise<User | null> => {
+export const signUpService = async (data: User): Promise<User | null> => {
   // existency check
   const [email, phone] = await Promise.all([
     isExist(data.email),
@@ -62,7 +59,7 @@ export const signInService = async (
   // existency check
   const user = await isExist(data.email)
   if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found')
+    throw new ApiError(httpStatus.NOT_FOUND, 'Email is incorrect')
   }
 
   // Password check

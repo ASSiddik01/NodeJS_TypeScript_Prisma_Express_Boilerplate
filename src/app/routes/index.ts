@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import authRoute from '../modules/auth/auth.routes'
-import userRoute from '../modules/user/user.routes'
+import profileRoute from '../modules/profile/profile.routes'
 
 const appRoutes = [
   {
@@ -9,8 +9,8 @@ const appRoutes = [
     route: authRoute,
   },
   {
-    path: '/user',
-    route: userRoute,
+    path: '/profile',
+    route: profileRoute,
   },
 ]
 

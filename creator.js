@@ -27,12 +27,10 @@ fs.mkdirSync(targetDirectory, { recursive: true })
 const routesTemplate = `
 import express from 'express'
 import reqValidate from '../../../middleware/reqValidate'
-import { USER_ROLE } from '@prisma/client'
 import { auth } from '../../../middleware/auth'
+import { ENUM_USER_ROLE } from '../../../enums/user'
 import { create${capitalizeLetter(name)}Zod } from './${name}.validations'
-import { create${capitalizeLetter(name)} } from './${capitalizeLetter(
-  name
-)}.controllers'
+import { create${capitalizeLetter(name)} } from './${name}.controllers'
 
 const router = express.Router()
 
@@ -40,7 +38,7 @@ const router = express.Router()
 router
   .route('/create')
   .post(
-    auth(USER_ROLE.admin),
+    auth(ENUM_USER_ROLE.USER),
     reqValidate(create${capitalizeLetter(name)}Zod),
     create${capitalizeLetter(name)}
   )
@@ -55,7 +53,7 @@ fs.writeFileSync(
 const validationTemplate = `
 import { z } from 'zod'
 
-// example zod validation schema
+// Create ${name} zod validation schema
 export const create${capitalizeLetter(name)}Zod = z.object({
   body: z.object({
     key: z.string({
@@ -85,7 +83,7 @@ export const create${capitalizeLetter(
   sendRes<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Create ${capitalizeLetter(name)} successfully',
+    message: 'Create ${name} successfully',
     data: result,
   })
 })
@@ -104,7 +102,9 @@ import config from '../../../config'
 import httpStatus from 'http-status'
 import { ApiError } from './../../../errorFormating/apiError'
 
-export const create${name.lo}Service = async (data: User): Promise<User | null> => {
+export const create${capitalizeLetter(
+  name
+)}Service = async (data: User): Promise<User | null> => {
   return result
 }
 `
@@ -115,7 +115,7 @@ fs.writeFileSync(
 
 const interfacesTemplate = `
 // Example interfaces
-export type I${name} = {
+export type I${capitalizeLetter(name)} = {
   oldPassword: string
   newPassword: string
 }

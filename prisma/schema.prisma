@@ -11,26 +11,42 @@ datasource db {
 }
 
 model User {
-  id                   String  @id @default(uuid())
+  id                   String   @id @default(uuid())
   name                 String
-  email                String  @unique
-  phone                String  @unique
+  email                String   @unique
+  phone                String   @unique
+  role                 String?
   password             String
   passwordResetToken   String?
   passwordResetExpires Float?
+  profile              Profile?
 
   @@map("users")
 }
 
-// model Post {
-//   id       String @id @default(uuid())
-//   title    String
-//   category String
-//   authorId String
-//   author   User   @relation(fields: [authorId], references: [id])
+model Profile {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
-//   createdAt DateTime  @default(now())
-//   updatedAt DateTime? @updatedAt()
+  about        String
+  designation  String?
+  resumeUrl    String?
+  address      String
+  bloodGroup   String?
+  contactEmail String?
+  occupation   String?
+  photoUrl     String?
+  facebook     String?
+  github       String?
+  linkedin     String?
+  instagram    String?
+  behance      String?
+  skype        String?
+  twitter      String?
+  telegram     String?
+  whatsapp     String?
+  youtube      String?
 
-//   @@map("posts")
-// }
+  @@map("profiles")
+}
