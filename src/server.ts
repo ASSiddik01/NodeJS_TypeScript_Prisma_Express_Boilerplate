@@ -11,9 +11,9 @@ process.on('uncaughtException', error => {
 
 bootStrap()
 
-// process.on('SIGTERM', () => {
-//   logger.info(`Sigterm is received`)
-//   if (server) {
-//     server.close()
-//   }
-// })
+process.on('SIGTERM', () => {
+  logger.info(`Sigterm is received`)
+  if (server) {
+    server.close()
+  }
+})
