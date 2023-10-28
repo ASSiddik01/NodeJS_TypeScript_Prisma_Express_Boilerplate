@@ -2,13 +2,14 @@ import express from 'express'
 import reqValidate from '../../../middleware/reqValidate'
 import { auth } from '../../../middleware/auth'
 import {
+  accountActivation,
   changePassword,
   forgetPassword,
   refreshToken,
   resetPassword,
   signIn,
   signUp,
-} from './auth.controller'
+} from './auth.controllers'
 import {
   changePasswordZod,
   forgetPasswordZod,
@@ -16,12 +17,14 @@ import {
   resetPasswordZod,
   signInZod,
   signUpZod,
-} from './auth.validation'
+} from './auth.validations'
 import { ENUM_USER_ROLE } from '../../../enums/user'
 
 const router = express.Router()
 
 router.route('/signup').post(reqValidate(signUpZod), signUp)
+
+router.route('/account-active/:token').patch(accountActivation)
 
 router.route('/signin').post(reqValidate(signInZod), signIn)
 
