@@ -6,47 +6,29 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id                   String   @id @default(uuid())
-  name                 String
-  email                String   @unique
-  phone                String   @unique
-  role                 String?
-  password             String
-  passwordResetToken   String?
-  passwordResetExpires Float?
-  profile              Profile?
+  id                     String    @id @default(uuid())
+  name                   String
+  email                  String    @unique
+  role                   role      @default(User)
+  phone                  String    @unique
+  password               String
+  photo                  String?
+  isActive               Boolean   @default(false)
+  activationToken        String?
+  passwordResetToken     String?
+  passwordChangeAt       DateTime?
+  createdAt              DateTime  @default(now())
 
   @@map("users")
 }
 
-model Profile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  about        String
-  designation  String?
-  resumeUrl    String?
-  address      String
-  bloodGroup   String?
-  contactEmail String?
-  occupation   String?
-  photoUrl     String?
-  facebook     String?
-  github       String?
-  linkedin     String?
-  instagram    String?
-  behance      String?
-  skype        String?
-  twitter      String?
-  telegram     String?
-  whatsapp     String?
-  youtube      String?
-
-  @@map("profiles")
+enum role {
+  User
+  Admin
+  Super_Admin
 }

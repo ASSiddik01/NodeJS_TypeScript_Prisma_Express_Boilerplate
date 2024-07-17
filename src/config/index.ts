@@ -18,5 +18,10 @@ export default {
     refresh_secret: process.env.JWT_REFRESH_SECRET,
     expires_in: process.env.JWT_EXPIRES_IN,
     refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
+    activation_secret: process.env.JWT_ACTIVITION_SECRET,
+    activation_secret_expires_in: process.env.JWT_ACTIVITION_SECRET_EXPIRES_IN,
+    reset_password_secret: process.env.JWT_RESET_PASSWORD_SECRET,
+    reset_password_secret_expires_in:
+      process.env.JWT_RESET_PASSWORD_SECRET_EXPIRES_IN,
   },
 }

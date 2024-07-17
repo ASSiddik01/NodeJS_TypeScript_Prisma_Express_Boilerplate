@@ -6,24 +6,37 @@ import { User } from '@prisma/client'
 import config from '../../../config'
 import { IAuthSigninResponse, IRefreshTokenResponse } from './auth.interfaces'
 import {
+  accountActivationService,
   changePasswordService,
   forgetPasswordService,
   refreshTokenService,
   resetPasswordService,
   signInService,
   signUpService,
-} from './auth.service'
+} from './auth.services'
 
+// sign up
 export const signUp = tryCatch(async (req: Request, res: Response) => {
   const result = await signUpService(req.body)
   sendRes<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Sign up successfully',
+    message: `Check email: ${req.body.email} to active your account`,
     data: result,
   })
 })
-
+// account activation
+export const accountActivation = tryCatch(async (req, res) => {
+  const { token } = req.params
+  const result = await accountActivationService(token)
+  sendRes(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Account active successfully',
+    data: result,
+  })
+})
+// sign in
 export const signIn = tryCatch(async (req: Request, res: Response) => {
   const result = await signInService(req.body)
 
@@ -51,7 +64,7 @@ export const signIn = tryCatch(async (req: Request, res: Response) => {
     })
   }
 })
-
+// refresh token
 export const refreshToken = tryCatch(async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies
   const result = await refreshTokenService(refreshToken)
@@ -70,7 +83,7 @@ export const refreshToken = tryCatch(async (req: Request, res: Response) => {
     data: result,
   })
 })
-
+// /change password
 export const changePassword = tryCatch(async (req, res) => {
   await changePasswordService(req.body, req.user as Partial<User>)
   sendRes(res, {
@@ -79,7 +92,7 @@ export const changePassword = tryCatch(async (req, res) => {
     message: 'Password changed successfully !',
   })
 })
-
+// forget password
 export const forgetPassword = tryCatch(async (req, res) => {
   const { email } = req.body
   await forgetPasswordService(email)
@@ -89,7 +102,7 @@ export const forgetPassword = tryCatch(async (req, res) => {
     message: 'Send reset token in you email successfully !',
   })
 })
-
+// reset password
 export const resetPassword = tryCatch(async (req, res) => {
   const { password } = req.body
   const { token } = req.params
